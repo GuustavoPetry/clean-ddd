@@ -10,7 +10,7 @@ const fakeAnswerRepository: AnswersRepository = {
 }
 
 test("create an answer", async () => {
-    
+
     const answerQuestion = new AnswerQuestionService(fakeAnswerRepository);
 
     const answer = await answerQuestion.execute({
@@ -19,6 +19,6 @@ test("create an answer", async () => {
         content: "Nova Resposta"
     });
 
-    expect(answer.id).toEqual(expect.any(String));
+    expect(answer.id.toString()).toEqual(expect.any(String));
     expect(answer.content).toEqual("Nova Resposta");
 });
