@@ -1,24 +1,24 @@
-import { expect, test } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { AnswerQuestionService } from "./answer-question";
-import { AnswersRepository } from "../repositories/answer-repository";
-import { Answer } from "../../enterprise/entities/answer";
+import { InMemoryAnswerRepository } from "../../../../../test/repositories/in-memory-answer-repository";
 
-const fakeAnswerRepository: AnswersRepository = {
-    create: async (answer: Answer) => {
-        return;
-    }
-}
+let inMemoryAnswerRepository: InMemoryAnswerRepository;
+let sut: AnswerQuestionService;
 
-test("create an answer", async () => {
-
-    const answerQuestion = new AnswerQuestionService(fakeAnswerRepository);
-
-    const answer = await answerQuestion.execute({
-        questionId: "1",
-        instructorId: "1",
-        content: "Nova Resposta"
+describe("Answer Question", () => {
+    beforeEach(() => {
+        inMemoryAnswerRepository = new InMemoryAnswerRepository();
+        sut = new AnswerQuestionService(inMemoryAnswerRepository);
     });
 
-    expect(answer.id.toString()).toEqual(expect.any(String));
-    expect(answer.content).toEqual("Nova Resposta");
+    it("create an answer", async () => {
+        const { answer } = await sut.execute({
+            questionId: "1",
+            instructorId: "1",
+            content: "Nova Resposta"
+        });
+
+        expect(answer.id.toString()).toBeTruthy();
+        expect(inMemoryAnswerRepository.items[0]?.id).toEqual(answer.id);
+    });
 });
