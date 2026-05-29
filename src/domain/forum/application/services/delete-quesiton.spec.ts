@@ -37,13 +37,6 @@ describe("Delete Question", () => {
 
         await repository.create(question);
 
-        // await expect(() =>
-        //     sut.execute({
-        //         id: "question-1",
-        //         authorId: "another-user",
-        //     })
-        // ).rejects.toBeInstanceOf(Error);
-
         await expect(() =>
             sut.execute({
                 id: "question-1",

@@ -1,4 +1,6 @@
 import { QuestionRepository } from "../repositories/question-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
 
 interface DeleQuestionServiceRequest {
     id: string,
@@ -16,11 +18,11 @@ export class DeleteQuestionService {
     }: DeleQuestionServiceRequest): Promise<DeleQuestionServiceResponse> {
         const findQuestion = await this.repository.findById(id);
 
-        if (!findQuestion) throw new Error(`Question not found.`);
+        if (!findQuestion) throw new ResourceNotFoundError();
 
         const isAuthor = findQuestion.authorId.toString() === authorId;
 
-        if (!isAuthor) throw new Error(`Unauthorized`);
+        if (!isAuthor) throw new UserNotAuthorizedError();
 
         await this.repository.delete(id);
 

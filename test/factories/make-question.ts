@@ -11,7 +11,7 @@ export function makeQuestion(
         title: faker.lorem.sentence(),
         content: faker.lorem.paragraph(),
         slug: Slug.createFromText(faker.lorem.slug()),
-        authorId: new UniqueEntityID("ID TEST"),
+        authorId: new UniqueEntityID(),
         ...override,
     }, id);
 
