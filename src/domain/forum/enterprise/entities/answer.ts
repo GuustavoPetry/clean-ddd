@@ -49,7 +49,7 @@ export class Answer extends Entity<AnswerProps> {
     ) {
         const answer = new Answer({
             ...props,
-            created_at: new Date(),
+            created_at: props.created_at ?? new Date(),
         }, id)
 
         return answer;
