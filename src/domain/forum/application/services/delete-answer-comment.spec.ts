@@ -1,0 +1,41 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { InMemoryAnswerCommentRepository } from "../../../../../test/repositories/in-memory-answer-comment-repository";
+import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { DeleteAnswerCommentService } from "./delete-answer-comment";
+import { makeAnswerComment } from "../../../../../test/factories/make-answer-comment";
+
+let inMemoryAnswerComment: InMemoryAnswerCommentRepository;
+let sut: DeleteAnswerCommentService;
+
+describe("Delete Answer Comment", () => {
+    beforeEach(() => {
+        inMemoryAnswerComment = new InMemoryAnswerCommentRepository();
+        sut = new DeleteAnswerCommentService(inMemoryAnswerComment);
+    });
+
+    it("should be able to delete a answer comment", async () => {
+        const comment = makeAnswerComment();
+
+        await inMemoryAnswerComment.create(comment);
+
+        await sut.execute({
+            authorId: comment.authorId.toString(),
+            answerCommentId: comment.id.toString(),
+        });
+
+        expect(inMemoryAnswerComment.items).toHaveLength(0);
+    });
+
+    it("should not be able to delete a answer from another user", async () => {
+        const comment = makeAnswerComment();
+
+        await inMemoryAnswerComment.create(comment);
+
+        await expect(() =>
+            sut.execute({
+                authorId: "author-2",
+                answerCommentId: comment.id.toString()
+            })
+        ).rejects.toBeInstanceOf(UserNotAuthorizedError);
+    })
+});
