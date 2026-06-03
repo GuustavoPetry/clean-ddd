@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryAnswerCommentRepository } from "../../../../../test/repositories/in-memory-answer-comment-repository";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
 import { DeleteAnswerCommentService } from "./delete-answer-comment";
 import { makeAnswerComment } from "../../../../../test/factories/make-answer-comment";
+import { Left } from "@/core/either";
 
 let inMemoryAnswerComment: InMemoryAnswerCommentRepository;
 let sut: DeleteAnswerCommentService;
@@ -31,11 +31,11 @@ describe("Delete Answer Comment", () => {
 
         await inMemoryAnswerComment.create(comment);
 
-        await expect(() =>
-            sut.execute({
-                authorId: "author-2",
-                answerCommentId: comment.id.toString()
-            })
-        ).rejects.toBeInstanceOf(UserNotAuthorizedError);
+        const result = await sut.execute({
+            authorId: "author-2",
+            answerCommentId: comment.id.toString()
+        });
+
+        expect(result).toBeInstanceOf(Left);
     })
 });

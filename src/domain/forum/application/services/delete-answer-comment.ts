@@ -1,3 +1,4 @@
+import { Either, left, rigth } from "@/core/either";
 import { AnswerCommentRepository } from "../repositories/answer-comment-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
@@ -7,9 +8,7 @@ interface DeleteAnswerCommentServiceRequest {
     answerCommentId: string,
 }
 
-interface DeleteAnswerCommentServiceResponse {
-
-}
+type DeleteAnswerCommentServiceResponse = Either<string, {}>
 
 export class DeleteAnswerCommentService {
     constructor(private answerCommentRepo: AnswerCommentRepository) { }
@@ -20,14 +19,14 @@ export class DeleteAnswerCommentService {
     }: DeleteAnswerCommentServiceRequest): Promise<DeleteAnswerCommentServiceResponse> {
         const answerComment = await this.answerCommentRepo.findById(answerCommentId);
 
-        if (!answerComment) throw new ResourceNotFoundError();
+        if (!answerComment) return left("Resource not found.");
 
         const isAuthor = answerComment.authorId.toString() === authorId;
 
-        if (!isAuthor) throw new UserNotAuthorizedError();
+        if (!isAuthor) return left("User not authorized.");
 
         await this.answerCommentRepo.delete(answerComment);
 
-        return {}
+        return rigth({});
     }
 }
