@@ -21,11 +21,12 @@ describe("Delete Answer", () => {
 
         await repository.create(answer);
 
-        await sut.execute({
+        const result = await sut.execute({
             id: "answer-1",
             authorId: "author-1"
         });
 
+        expect(result.isRigth()).toBe(true);
         expect(repository.items).toHaveLength(0);
     });
 
@@ -36,11 +37,12 @@ describe("Delete Answer", () => {
 
         await repository.create(answer);
 
-        await expect(() =>
-            sut.execute({
-                id: "answer-1",
-                authorId: "author-2"
-            })).rejects.toBeInstanceOf(UserNotAuthorizedError);
+        const result = await sut.execute({
+            id: "answer-1",
+            authorId: "author-2"
+        });
 
+        expect(result.isLeft()).toBe(true);
+        expect(repository.items).toHaveLength(1);
     });
 })

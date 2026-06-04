@@ -18,11 +18,12 @@ describe("Delete Question Comment", () => {
 
         await inMemoryQuestionComment.create(comment);
 
-        await sut.execute({
+        const result = await sut.execute({
             authorId: comment.authorId.toString(),
             questionCommentId: comment.id.toString(),
         });
 
+        expect(result.isRigth()).toBe(true);
         expect(inMemoryQuestionComment.items).toHaveLength(0);
     });
 
@@ -31,11 +32,12 @@ describe("Delete Question Comment", () => {
 
         await inMemoryQuestionComment.create(comment);
 
-        await expect(() =>
-            sut.execute({
-                authorId: "author-2",
-                questionCommentId: comment.id.toString()
-            })
-        ).rejects.toBeInstanceOf(UserNotAuthorizedError);
-    })
+        const result = await sut.execute({
+            authorId: "author-2",
+            questionCommentId: comment.id.toString()
+        });
+
+        expect(result.isLeft()).toBe(true);
+        expect(result.value).toBeInstanceOf(UserNotAuthorizedError);
+    });
 });

@@ -3,6 +3,7 @@ import { InMemoryQuestionRepository } from "../../../../../test/repositories/in-
 import { DeleteQuestionService } from "./delete-question";
 import { makeQuestion } from "../../../../../test/factories/make-question";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
 
 let repository: InMemoryQuestionRepository;
 let sut: DeleteQuestionService;
@@ -21,11 +22,12 @@ describe("Delete Question", () => {
 
         await repository.create(question);
 
-        await sut.execute({
+        const result = await sut.execute({
             id: "question-1",
             authorId: "author-1",
         });
 
+        expect(result.isRigth()).toBe(true);
         expect(repository.items).toHaveLength(0);
     });
 
@@ -37,11 +39,12 @@ describe("Delete Question", () => {
 
         await repository.create(question);
 
-        await expect(() =>
-            sut.execute({
-                id: "question-1",
-                authorId: "another-user",
-            })
-        ).rejects.toBeInstanceOf(Error);
+        const result = await sut.execute({
+            id: "question-1",
+            authorId: "another-user",
+        });
+
+        expect(result.isLeft()).toBe(true);
+        expect(result.value).toBeInstanceOf(UserNotAuthorizedError);
     });
 });

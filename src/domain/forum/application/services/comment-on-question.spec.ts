@@ -23,12 +23,13 @@ describe("Comment on Question", () => {
 
         await inMemoryQuestion.create(question);
 
-        await sut.execute({
+        const result = await sut.execute({
             authorId: question.authorId.toString(),
             questionId: question.id.toString(),
             content: "New comment on question"
         });
 
+        expect(result.isRigth()).toBe(true);
         expect(inMemoryQuestionComment.items[0]?.content).toEqual("New comment on question");
     });
 });

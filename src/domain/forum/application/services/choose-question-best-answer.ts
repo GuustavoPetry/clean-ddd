@@ -1,3 +1,4 @@
+import { Either, left, rigth } from "@/core/either";
 import { Question } from "../../enterprise/entities/question";
 import { AnswersRepository } from "../repositories/answer-repository";
 import { QuestionRepository } from "../repositories/question-repository";
@@ -9,15 +10,18 @@ interface ChooseQuestionBestAnswerServiceRequest {
     answerId: string,
 }
 
-interface ChooseQuestionBestAnswerServiceResponse {
-    question: Question,
-}
+type ChooseQuestionBestAnswerServiceResponse = Either<
+    ResourceNotFoundError | UserNotAuthorizedError,
+    {
+        question: Question,
+    }
+>
 
 export class ChooseQuestionBestAnswer {
-    constructor (
+    constructor(
         private questionRepository: QuestionRepository,
         private answerRepository: AnswersRepository,
-    ) {}
+    ) { }
 
     async execute({
         authorId,
@@ -25,22 +29,22 @@ export class ChooseQuestionBestAnswer {
     }: ChooseQuestionBestAnswerServiceRequest): Promise<ChooseQuestionBestAnswerServiceResponse> {
         const answer = await this.answerRepository.findById(answerId);
 
-        if (!answer) throw new ResourceNotFoundError();
+        if (!answer) return left(new ResourceNotFoundError());
 
         const question = await this.questionRepository.findById(answer.questionId.toString());
 
-        if (!question) throw new ResourceNotFoundError();
+        if (!question) return left(new ResourceNotFoundError());
 
         const isAuthor = question.authorId.toString() === authorId;
 
-        if (!isAuthor) throw new UserNotAuthorizedError();
+        if (!isAuthor) return left(new UserNotAuthorizedError());
 
         question.bestAnswerId = answer.id;
 
         await this.questionRepository.save(question);
 
-        return {
+        return rigth({
             question,
-        }
+        });
     }
 }

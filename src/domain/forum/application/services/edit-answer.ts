@@ -1,3 +1,4 @@
+import { Either, left, rigth } from "@/core/either";
 import { InMemoryAnswerRepository } from "../../../../../test/repositories/in-memory-answer-repository";
 import { Answer } from "../../enterprise/entities/answer";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
@@ -9,9 +10,12 @@ interface EditAnswerServiceRequest {
     content: string,
 }
 
-interface EditAnswerServiceResponse {
-    answer: Answer,
-}
+type EditAnswerServiceResponse = Either<
+    ResourceNotFoundError | UserNotAuthorizedError,
+    {
+        answer: Answer,
+    }
+>
 
 export class EditAnswerService {
     constructor(private repository: InMemoryAnswerRepository) { }
@@ -23,18 +27,18 @@ export class EditAnswerService {
     }: EditAnswerServiceRequest): Promise<EditAnswerServiceResponse> {
         const answer = await this.repository.findById(answerId);
 
-        if (!answer) throw new ResourceNotFoundError();
+        if (!answer) return left(new ResourceNotFoundError());
 
         const isAuthor = answer.authorId.toString() === authorId;
 
-        if(!isAuthor) throw new UserNotAuthorizedError();
+        if (!isAuthor) return left(new UserNotAuthorizedError());
 
         answer.content = content;
 
         this.repository.save(answer);
 
-        return {
+        return rigth({
             answer,
-        }
+        });
     }
 }

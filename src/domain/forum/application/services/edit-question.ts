@@ -1,3 +1,4 @@
+import { Either, left, rigth } from "@/core/either";
 import { QuestionRepository } from "../repositories/question-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
@@ -9,7 +10,10 @@ interface EditQuestionServiceRequest {
     content: string
 }
 
-interface EditQuestionServiceResponse { }
+type EditQuestionServiceResponse = Either<
+    ResourceNotFoundError | UserNotAuthorizedError,
+    {}
+>
 
 export class EditQuestion {
     constructor(private repository: QuestionRepository) { }
@@ -19,20 +23,20 @@ export class EditQuestion {
         questionId,
         title,
         content
-    }: EditQuestionServiceRequest): Promise<EditQuestionServiceResponse> { 
+    }: EditQuestionServiceRequest): Promise<EditQuestionServiceResponse> {
         const question = await this.repository.findById(questionId);
 
-        if(!question) throw new ResourceNotFoundError();
+        if (!question) return left(new ResourceNotFoundError());
 
         const isAuthor = question.authorId.toString() === authorId;
 
-        if(!isAuthor) throw new UserNotAuthorizedError();
+        if (!isAuthor) return left(new UserNotAuthorizedError());
 
         question.title = title;
         question.content = content;
-        
+
         await this.repository.save(question);
 
-        return {}
+        return rigth({});
     }
 }

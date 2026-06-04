@@ -28,12 +28,13 @@ describe("Choose Question Best Answer", () => {
         await inMemoryQuestionRepository.create(question);
         await inMemoryAnswerRepository.create(answer);
 
-        await sut.execute({
+        const result = await sut.execute({
             authorId: question.authorId.toString(),
             answerId: answer.id.toString(),
         });
 
-        expect(question.bestAnswerId).toEqual(answer.id);
+        expect(result.isRigth()).toBe(true);
+        expect(inMemoryQuestionRepository.items[0]?.bestAnswerId).toEqual(answer.id);
     });
 
     it("should not be able to define best answer if is not author", async () => {
@@ -46,11 +47,12 @@ describe("Choose Question Best Answer", () => {
         await inMemoryQuestionRepository.create(question);
         await inMemoryAnswerRepository.create(answer);
 
-        await expect(() =>
-            sut.execute({
-                authorId: "author-2",
-                answerId: "answer-1"
-            })
-        ).rejects.toBeInstanceOf(UserNotAuthorizedError);
+        const result = await sut.execute({
+            authorId: "author-2",
+            answerId: "answer-1"
+        })
+
+        expect(result.isLeft()).toBe(true);
+        expect(result.value).toBeInstanceOf(UserNotAuthorizedError);
     });
 });

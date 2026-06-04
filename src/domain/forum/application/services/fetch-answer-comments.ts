@@ -1,3 +1,4 @@
+import { Either, rigth } from "@/core/either";
 import { AnswerComment } from "../../enterprise/entities/answer-comment";
 import { AnswerCommentRepository } from "../repositories/answer-comment-repository";
 
@@ -6,9 +7,12 @@ interface FetchAnswerCommentsRequest {
     page: number,
 }
 
-interface FetchAnswerCommentsResponse {
-    answerComments: AnswerComment[]
-}
+type FetchAnswerCommentsResponse = Either<
+    void,
+    {
+        answerComments: AnswerComment[]
+    }
+>
 
 export class FetchAnswerCommentsService {
     constructor(private answerCommentsRepository: AnswerCommentRepository) { }
@@ -19,9 +23,9 @@ export class FetchAnswerCommentsService {
     }: FetchAnswerCommentsRequest): Promise<FetchAnswerCommentsResponse> {
         const answerComments = await this.answerCommentsRepository.fetchByAnswerId(answerId, { page });
 
-        return {
+        return rigth({
             answerComments,
-        };
+        });
 
     }
 }

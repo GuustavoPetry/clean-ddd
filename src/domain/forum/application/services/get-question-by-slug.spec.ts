@@ -22,9 +22,9 @@ describe("Get Question By Slug", () => {
 
         inMemoryQuestionRepository.create(question);
 
-        const getQuestionBySlug = await sut.execute({ slug: "example-slug" });
+        const result = await sut.execute({ slug: "example-slug" });
 
-        expect(getQuestionBySlug.question).toBeInstanceOf(Question);
-        expect(getQuestionBySlug.question.slug.value).toBe("example-slug");
+        expect(result.isRigth()).toBe(true);
+        expect(inMemoryQuestionRepository.items[0]?.slug.value).toBe("example-slug");
     });
 })

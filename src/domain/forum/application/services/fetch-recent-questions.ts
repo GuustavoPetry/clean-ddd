@@ -1,3 +1,4 @@
+import { Either, rigth } from "@/core/either";
 import { Question } from "../../enterprise/entities/question";
 import { QuestionRepository } from "../repositories/question-repository";
 
@@ -5,9 +6,12 @@ interface FetchRecentQuestionsServiceRequest {
     page: number
 }
 
-interface FetchRecentQuestionsResponse {
-    questions: Question[]
-}
+type FetchRecentQuestionsResponse = Either<
+    void,
+    {
+        questions: Question[]
+    }
+>
 
 export class FetchRecentQuestionsService {
     constructor(private questionRepository: QuestionRepository) { }
@@ -17,8 +21,8 @@ export class FetchRecentQuestionsService {
     }: FetchRecentQuestionsServiceRequest): Promise<FetchRecentQuestionsResponse> {
         const questions = await this.questionRepository.findManyRecent({ page });
 
-        return {
+        return rigth({
             questions,
-        }
+        });
     }
 }

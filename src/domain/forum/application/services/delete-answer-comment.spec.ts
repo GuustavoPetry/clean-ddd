@@ -18,11 +18,12 @@ describe("Delete Answer Comment", () => {
 
         await inMemoryAnswerComment.create(comment);
 
-        await sut.execute({
+        const result = await sut.execute({
             authorId: comment.authorId.toString(),
             answerCommentId: comment.id.toString(),
         });
 
+        expect(result.isRigth()).toBe(true);
         expect(inMemoryAnswerComment.items).toHaveLength(0);
     });
 
@@ -36,6 +37,7 @@ describe("Delete Answer Comment", () => {
             answerCommentId: comment.id.toString()
         });
 
-        expect(result).toBeInstanceOf(Left);
+        expect(result.isLeft()).toBe(true);
+        expect(inMemoryAnswerComment.items).toHaveLength(1);
     })
 });

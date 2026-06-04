@@ -1,3 +1,4 @@
+import { Either, left, rigth } from "@/core/either";
 import { AnswersRepository } from "../repositories/answer-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
@@ -7,7 +8,10 @@ interface DeleteAnswerServiceRequest {
     authorId: string,
 }
 
-interface DeleteAnswerServiceResponse { }
+type DeleteAnswerServiceResponse = Either<
+    ResourceNotFoundError | UserNotAuthorizedError,
+    {}
+>
 
 export class DeleteAnswerService {
     constructor(private repository: AnswersRepository) { }
@@ -18,14 +22,14 @@ export class DeleteAnswerService {
     }: DeleteAnswerServiceRequest): Promise<DeleteAnswerServiceResponse> {
         const findAnswer = await this.repository.findById(id);
 
-        if (!findAnswer) throw new ResourceNotFoundError();
+        if (!findAnswer) return left(new ResourceNotFoundError());
 
         const isAuthor = findAnswer.authorId.toString() === authorId;
 
-        if (!isAuthor) throw new UserNotAuthorizedError();
+        if (!isAuthor) return left(new UserNotAuthorizedError());
 
         await this.repository.delete(id);
 
-        return {}
+        return rigth({});
     }
 }

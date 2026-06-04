@@ -21,31 +21,33 @@ describe("Edit ", () => {
 
         inMemoryRepository.create(newAnswer);
 
-        await sut.execute({
+        const result = await sut.execute({
             authorId: "author-1",
             answerId: "answer-1",
             content: "New Content",
         });
 
+        expect(result.isRigth()).toBe(true);
         expect(inMemoryRepository.items[0]).toMatchObject({
             content: "New Content",
         });
-
     });
 
     it("should not be able to edit a answer for another user", async () => {
         const answer = makeAnswer({
-            authorId: new UniqueEntityID("author-1")
+            authorId: new UniqueEntityID("author-1"),
+            content: "Answer Content",
         }, new UniqueEntityID("answer-1"));
 
         await inMemoryRepository.create(answer);
 
-        await expect(() =>
-            sut.execute({
-                authorId: "author-2",
-                answerId: "answer-1",
-                content: "New Content"
-            })
-        ).rejects.toBeInstanceOf(UserNotAuthorizedError);
+        const result = await sut.execute({
+            authorId: "author-2",
+            answerId: "answer-1",
+            content: "New Content"
+        });
+
+        expect(result.isLeft()).toBe(true);
+        expect(inMemoryRepository.items[0]?.content).toBe("Answer Content");
     });
 });
