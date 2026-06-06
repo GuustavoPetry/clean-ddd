@@ -21,8 +21,6 @@ describe("Comment on Question", () => {
     it("should be able to create a comment on question", async () => {
         const question = makeQuestion();
 
-        await inMemoryQuestion.create(question);
-
         const result = await sut.execute({
             authorId: question.authorId.toString(),
             questionId: question.id.toString(),
