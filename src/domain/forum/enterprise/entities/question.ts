@@ -3,7 +3,7 @@ import { Slug } from "./value-objects/slug";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 import dayjs from "dayjs";
-import { QuestionAttachmentList } from "../question-attachment-list";
+import { QuestionAttachmentList } from "./question-attachment-list";
 
 export interface QuestionProps {
     authorId: UniqueEntityID,

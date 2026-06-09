@@ -3,7 +3,7 @@ import { QuestionRepository } from "../repositories/question-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
 import { QuestionAttachmentRepository } from "../repositories/question-attachment-repository";
-import { QuestionAttachmentList } from "../../enterprise/question-attachment-list";
+import { QuestionAttachmentList } from "../../enterprise/entities/question-attachment-list";
 import { QuestionAttachments } from "../../enterprise/entities/question-attachments";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 

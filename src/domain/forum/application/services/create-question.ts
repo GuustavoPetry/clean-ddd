@@ -3,7 +3,7 @@ import { Question } from "../../enterprise/entities/question";
 import { QuestionRepository } from "../repositories/question-repository";
 import { Either, rigth } from "@/core/either";
 import { QuestionAttachments } from "../../enterprise/entities/question-attachments";
-import { QuestionAttachmentList } from "../../enterprise/question-attachment-list";
+import { QuestionAttachmentList } from "../../enterprise/entities/question-attachment-list";
 
 interface CreateQuestionServiceRequest {
     authorId: string,
