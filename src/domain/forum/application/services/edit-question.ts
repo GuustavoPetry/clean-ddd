@@ -2,12 +2,17 @@ import { Either, left, rigth } from "@/core/either";
 import { QuestionRepository } from "../repositories/question-repository";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { QuestionAttachmentRepository } from "../repositories/question-attachment-repository";
+import { QuestionAttachmentList } from "../../enterprise/question-attachment-list";
+import { QuestionAttachments } from "../../enterprise/entities/question-attachments";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 interface EditQuestionServiceRequest {
     authorId: string,
     questionId: string,
     title: string,
-    content: string
+    content: string,
+    attachmentIds: string[],
 }
 
 type EditQuestionServiceResponse = Either<
@@ -16,15 +21,19 @@ type EditQuestionServiceResponse = Either<
 >
 
 export class EditQuestion {
-    constructor(private repository: QuestionRepository) { }
+    constructor(
+        private questionRepository: QuestionRepository,
+        private questionAttachmentRepository: QuestionAttachmentRepository,
+    ) { }
 
     async execute({
         authorId,
         questionId,
         title,
-        content
+        content,
+        attachmentIds,
     }: EditQuestionServiceRequest): Promise<EditQuestionServiceResponse> {
-        const question = await this.repository.findById(questionId);
+        const question = await this.questionRepository.findById(questionId);
 
         if (!question) return left(new ResourceNotFoundError());
 
@@ -32,10 +41,24 @@ export class EditQuestion {
 
         if (!isAuthor) return left(new UserNotAuthorizedError());
 
+        const currentAttachments = await this.questionAttachmentRepository.findManyByQuestionId(questionId);
+
+        const attachmentList = new QuestionAttachmentList(currentAttachments);
+
+        const newAttachmentList = attachmentIds.map((attachmentId) => {
+            return QuestionAttachments.create({
+                attachmentId: new UniqueEntityID(attachmentId),
+                questionId: question.id,
+            });
+        });
+
+        attachmentList.update(newAttachmentList);
+
         question.title = title;
         question.content = content;
+        question.attachments = attachmentList;
 
-        await this.repository.save(question);
+        await this.questionRepository.save(question);
 
         return rigth({});
     }
