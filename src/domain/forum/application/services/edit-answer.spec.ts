@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryAnswerRepository } from "../../../../../test/repositories/in-memory-answer-repository";
 import { makeAnswer } from "../../../../../test/factories/make-answer";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
 import { EditAnswerService } from "./edit-answer";
 import { InMemoryAnswerAttachmentRepository } from "../../../../../test/repositories/in-memory-answer-attachment-repository";
 import { makeAnswerAttachment } from "../../../../../test/factories/make-answer-attachment";
@@ -37,7 +36,6 @@ describe("Edit ", () => {
                 attachmentId: new UniqueEntityID("2"),
             }),
         );
-        console.log("items", inMemoryAnswerAttachments.items)
 
         const result = await sut.execute({
             authorId: "author-1",
