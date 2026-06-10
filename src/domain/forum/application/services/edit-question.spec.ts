@@ -6,13 +6,15 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { InMemoryQuestionAttachmentRepository } from "../../../../../test/repositories/in-memory-question-attachment-repository";
 import { makeQuestionAttachment } from "../../../../../test/factories/make-question-attachment";
 
+let questionAttachmentRepository: InMemoryQuestionAttachmentRepository;
 let inMemoryQuestionRepository: InMemoryQuestionRepository;
 let inMemoryQuestionAttachmentRepository: InMemoryQuestionAttachmentRepository;
 let sut: EditQuestion;
 
 describe("Edit Question", () => {
     beforeEach(() => {
-        inMemoryQuestionRepository = new InMemoryQuestionRepository();
+        questionAttachmentRepository = new InMemoryQuestionAttachmentRepository();
+        inMemoryQuestionRepository = new InMemoryQuestionRepository(questionAttachmentRepository);
         inMemoryQuestionAttachmentRepository = new InMemoryQuestionAttachmentRepository();
         sut = new EditQuestion(
             inMemoryQuestionRepository,

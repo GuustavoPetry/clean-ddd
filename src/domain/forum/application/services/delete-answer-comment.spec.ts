@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryAnswerCommentRepository } from "../../../../../test/repositories/in-memory-answer-comment-repository";
 import { DeleteAnswerCommentService } from "./delete-answer-comment";
 import { makeAnswerComment } from "../../../../../test/factories/make-answer-comment";
-import { Left } from "@/core/either";
 
 let inMemoryAnswerComment: InMemoryAnswerCommentRepository;
 let sut: DeleteAnswerCommentService;

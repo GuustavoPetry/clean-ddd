@@ -3,11 +3,15 @@ import { InMemoryAnswerRepository } from "../../../../../test/repositories/in-me
 import { Answer } from "../../enterprise/entities/answer";
 import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { AnswerAttachmentList } from "../../enterprise/entities/answer-attachment-list";
+import { AnswerAttachments } from "../../enterprise/entities/answer-attachments";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 interface EditAnswerServiceRequest {
     answerId: string,
     authorId: string,
     content: string,
+    attachmentIds: string[],
 }
 
 type EditAnswerServiceResponse = Either<
@@ -23,7 +27,8 @@ export class EditAnswerService {
     async execute({
         answerId,
         authorId,
-        content
+        content,
+        attachmentIds
     }: EditAnswerServiceRequest): Promise<EditAnswerServiceResponse> {
         const answer = await this.repository.findById(answerId);
 
@@ -33,7 +38,21 @@ export class EditAnswerService {
 
         if (!isAuthor) return left(new UserNotAuthorizedError());
 
+        const currentAttachments = answer.attachments.currentItems;
+
+        const currentAttachmentList = new AnswerAttachmentList(currentAttachments);
+
+        const newAttachments = attachmentIds.map((attachmentId) => {
+            return AnswerAttachments.create({
+                answerId: answer.id,
+                attachmentId: new UniqueEntityID(attachmentId)
+            });
+        });
+
+        currentAttachmentList.update(newAttachments);
+
         answer.content = content;
+        answer.attachments = currentAttachmentList;
 
         this.repository.save(answer);
 

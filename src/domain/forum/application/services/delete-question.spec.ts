@@ -1,17 +1,21 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { InMemoryQuestionRepository } from "../../../../../test/repositories/in-memory-question-repository";
 import { DeleteQuestionService } from "./delete-question";
 import { makeQuestion } from "../../../../../test/factories/make-question";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { InMemoryQuestionRepository } from "../../../../../test/repositories/in-memory-question-repository";
+import { InMemoryQuestionAttachmentRepository } from "../../../../../test/repositories/in-memory-question-attachment-repository";
+import { makeQuestionAttachment } from "../../../../../test/factories/make-question-attachment";
 
-let repository: InMemoryQuestionRepository;
+let questionRepository: InMemoryQuestionRepository;
+let attachmentRepository: InMemoryQuestionAttachmentRepository;
 let sut: DeleteQuestionService;
 
 describe("Delete Question", () => {
     beforeEach(() => {
-        repository = new InMemoryQuestionRepository();
-        sut = new DeleteQuestionService(repository);
+        attachmentRepository = new InMemoryQuestionAttachmentRepository();
+        questionRepository = new InMemoryQuestionRepository(attachmentRepository);
+        sut = new DeleteQuestionService(questionRepository);
     });
 
     it("should be able delete a question", async () => {
@@ -20,7 +24,18 @@ describe("Delete Question", () => {
             new UniqueEntityID("question-1")
         );
 
-        await repository.create(question);
+        await questionRepository.create(question);
+
+        attachmentRepository.items.push(
+            makeQuestionAttachment({
+                questionId: question.id,
+                attachmentId: new UniqueEntityID('1')
+            }),
+            makeQuestionAttachment({
+                questionId: question.id,
+                attachmentId: new UniqueEntityID('2')
+            }),
+        );
 
         const result = await sut.execute({
             id: "question-1",
@@ -28,7 +43,8 @@ describe("Delete Question", () => {
         });
 
         expect(result.isRigth()).toBe(true);
-        expect(repository.items).toHaveLength(0);
+        expect(questionRepository.items).toHaveLength(0);
+        expect(attachmentRepository.items).toHaveLength(0);
     });
 
     it("should not be able to delete a question from another user", async () => {
@@ -37,7 +53,7 @@ describe("Delete Question", () => {
             new UniqueEntityID("question-1")
         );
 
-        await repository.create(question);
+        await questionRepository.create(question);
 
         const result = await sut.execute({
             id: "question-1",

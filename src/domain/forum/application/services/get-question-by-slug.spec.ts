@@ -1,17 +1,18 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryQuestionRepository } from "../../../../../test/repositories/in-memory-question-repository";
 import { GetQuestionBySlug } from "./get-question-by-slug";
-import { Question } from "../../enterprise/entities/question";
 import { Slug } from "../../enterprise/entities/value-objects/slug";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { makeQuestion } from "../../../../../test/factories/make-question";
+import { InMemoryQuestionAttachmentRepository } from "../../../../../test/repositories/in-memory-question-attachment-repository";
 
+let questionAttachmentRepository: InMemoryQuestionAttachmentRepository;
 let inMemoryQuestionRepository: InMemoryQuestionRepository;
 let sut: GetQuestionBySlug;
 
 describe("Get Question By Slug", () => {
     beforeEach(() => {
-        inMemoryQuestionRepository = new InMemoryQuestionRepository();
+        questionAttachmentRepository = new InMemoryQuestionAttachmentRepository();
+        inMemoryQuestionRepository = new InMemoryQuestionRepository(questionAttachmentRepository);
         sut = new GetQuestionBySlug(inMemoryQuestionRepository);
     });
 
@@ -25,6 +26,11 @@ describe("Get Question By Slug", () => {
         const result = await sut.execute({ slug: "example-slug" });
 
         expect(result.isRigth()).toBe(true);
-        expect(inMemoryQuestionRepository.items[0]?.slug.value).toBe("example-slug");
+        expect(result.value).toMatchObject({
+            question: expect.objectContaining({
+                title: question.title,
+                slug: new Slug("example-slug")
+            }),
+        });
     });
 })
