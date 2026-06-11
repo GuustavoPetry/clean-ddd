@@ -1,12 +1,11 @@
-import { describe } from "node:test";
 import { WatchedList } from "./watched-list";
-import { expect, it } from "vitest";
+import { expect, it, describe } from "vitest";
 
 class NumberWatchedList extends WatchedList<number> {
     compareItems(a: number, b: number): boolean {
         return a === b;
     }
-    
+
 }
 
 describe("Watched List", () => {

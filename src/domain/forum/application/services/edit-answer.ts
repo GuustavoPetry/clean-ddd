@@ -1,8 +1,8 @@
 import { Either, left, rigth } from "@/core/either";
 import { InMemoryAnswerRepository } from "../../../../../test/repositories/in-memory-answer-repository";
 import { Answer } from "../../enterprise/entities/answer";
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found-error";
+import { UserNotAuthorizedError } from "@/core/errors/errors/user-not-authorized-error";
 import { AnswerAttachmentList } from "../../enterprise/entities/answer-attachment-list";
 import { AnswerAttachments } from "../../enterprise/entities/answer-attachments";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";

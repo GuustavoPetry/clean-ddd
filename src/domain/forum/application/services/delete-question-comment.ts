@@ -1,7 +1,7 @@
 import { Either, left, rigth } from "@/core/either";
 import { QuestionCommentRepository } from "../repositories/question-comment-repository";
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found-error";
+import { UserNotAuthorizedError } from "@/core/errors/errors/user-not-authorized-error";
 
 interface DeleteQuestionCommentServiceRequest {
     authorId: string,

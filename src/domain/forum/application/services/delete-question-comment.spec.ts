@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { InMemoryQuestionCommentRepository } from "../../../../../test/repositories/in-memory-question-comment-repository";
 import { makeQuestionComment } from "../../../../../test/factories/make-question-comment";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { UserNotAuthorizedError } from "@/core/errors/errors/user-not-authorized-error";
 import { DeleteQuestionCommentService } from "./delete-question-comment";
 
 let inMemoryQuestionComment: InMemoryQuestionCommentRepository;

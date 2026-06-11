@@ -5,7 +5,7 @@ import { ChooseQuestionBestAnswer } from "./choose-question-best-answer";
 import { makeQuestion } from "../../../../../test/factories/make-question";
 import { makeAnswer } from "../../../../../test/factories/make-answer";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { UserNotAuthorizedError } from "@/core/errors/errors/user-not-authorized-error";
 import { InMemoryAnswerAttachmentRepository } from "../../../../../test/repositories/in-memory-answer-attachment-repository";
 import { InMemoryQuestionAttachmentRepository } from "../../../../../test/repositories/in-memory-question-attachment-repository";
 

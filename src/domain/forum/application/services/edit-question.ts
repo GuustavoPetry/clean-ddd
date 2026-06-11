@@ -1,7 +1,7 @@
 import { Either, left, rigth } from "@/core/either";
 import { QuestionRepository } from "../repositories/question-repository";
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { UserNotAuthorizedError } from "./errors/user-not-authorized-error";
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found-error";
+import { UserNotAuthorizedError } from "@/core/errors/errors/user-not-authorized-error";
 import { QuestionAttachmentRepository } from "../repositories/question-attachment-repository";
 import { QuestionAttachmentList } from "../../enterprise/entities/question-attachment-list";
 import { QuestionAttachments } from "../../enterprise/entities/question-attachments";
