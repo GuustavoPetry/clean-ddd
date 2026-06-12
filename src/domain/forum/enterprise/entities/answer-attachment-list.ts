@@ -3,6 +3,6 @@ import { AnswerAttachments } from "./answer-attachments";
 
 export class AnswerAttachmentList extends WatchedList<AnswerAttachments> {
     compareItems(a: AnswerAttachments, b: AnswerAttachments): boolean {
-        return a.attachmentId === b.attachmentId
+        return a.attachmentId.equals(b.attachmentId);
     }
 }

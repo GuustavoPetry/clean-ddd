@@ -1,11 +1,158 @@
-1. [x] jogar pasta de erros para core
-2. [x] assinar métodos findById e save no notification-repository
-3. [x] implementar métodos no InMemoryNotification
-4. [] Service deve receber recipientId e notificationId
-5. [] buscar notification por ID, se não encontrar erro
-6. [] verificar se recipientId coincide, se não erro
-7. [] criar método read() na entidade
-8. [] chamar método read() no service e salvar no repositório a notificação
-9. [x] criar factory de notification
-10. [] o teste deve validar se isRigth é true, e se existe uma data em readAt
-11. [] o teste deve recusar outro recipientId ler a notificação
+# Marcar Notificação Como Lida
+
+Objetivo: permitir que apenas o destinatário da notificação possa marcá-la como lida.
+
+---
+
+# Ajustes no Repositório
+
+Adicionar os contratos necessários:
+
+```ts
+abstract findById(id: string): Promise<Notification | null>
+abstract save(notification: Notification): Promise<void>
+```
+
+Implementação InMemory:
+
+```ts
+async findById(id: string) {
+  return this.items.find(item => item.id.toString() === id) ?? null
+}
+
+async save(notification: Notification) {
+  const itemIndex = this.items.findIndex(
+    item => item.id.equals(notification.id),
+  )
+
+  this.items[itemIndex] = notification
+}
+```
+
+---
+
+# Service
+
+Recebe:
+
+```ts
+{
+  recipientId: string
+  notificationId: string
+}
+```
+
+Fluxo:
+
+```text
+Buscar notificação
+      ↓
+Existe?
+      ↓
+Validar recipientId
+      ↓
+Marcar como lida
+      ↓
+Salvar
+```
+
+Validações:
+
+```ts
+const notification =
+  await notificationsRepository.findById(notificationId)
+
+if (!notification) {
+  return left(new ResourceNotFoundError())
+}
+
+if (notification.recipientId.toString() !== recipientId) {
+  return left(new NotAllowedError())
+}
+```
+
+---
+
+# Entidade
+
+Criar método responsável pela regra de negócio:
+
+```ts
+read() {
+  this.props.readAt = new Date()
+}
+```
+
+Uso:
+
+```ts
+notification.read()
+```
+
+---
+
+# Persistindo Alteração
+
+Após marcar como lida:
+
+```ts
+notification.read()
+
+await notificationsRepository.save(notification)
+```
+
+---
+
+# Factory
+
+Facilita a criação de notificações nos testes:
+
+```ts
+const notification = makeNotification()
+```
+
+---
+
+# Teste de Sucesso
+
+Validar:
+
+```ts
+expect(result.isRight()).toBe(true)
+
+expect(notification.readAt).toEqual(expect.any(Date))
+```
+
+---
+
+# Teste de Autorização
+
+Outro usuário não pode ler a notificação:
+
+```ts
+expect(result.isLeft()).toBe(true)
+```
+
+---
+
+# Resumo
+
+```text
+Repository
+ ├─ findById()
+ └─ save()
+
+Service
+ ├─ busca notificação
+ ├─ valida existência
+ ├─ valida destinatário
+ ├─ chama read()
+ └─ salva
+
+Entity
+ └─ read()
+
+Testes
+ ├─ marca como lida
+ └─ bloqueia outro usuário
+```
