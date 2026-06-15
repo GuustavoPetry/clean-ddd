@@ -12,6 +12,7 @@ export class OnAnswerCreated implements EventHandler {
             this.sendNewAnswerNotification.bind(this),
             AnswerCreatedEvents.name
         );
+
     }
 
     sendNewAnswerNotification({ answer }: AnswerCreatedEvents) {

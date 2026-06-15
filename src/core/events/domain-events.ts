@@ -49,11 +49,11 @@ export class DomainEvents {
         eventClassName: string,
     ) {
         const wasEventRegisterBefore = eventClassName in this.handlersMap;
-
+        
         if (!wasEventRegisterBefore) {
             this.handlersMap[eventClassName] = [];
         }
-
+        
         this.handlersMap[eventClassName]?.push(callback);
     }
 

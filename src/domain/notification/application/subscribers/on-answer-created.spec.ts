@@ -22,6 +22,6 @@ describe("On Answer Created Event", () => {
 
         await inMemoryAnswerRepository.create(answer);
 
-        expect(inMemoryAnswerRepository.items[0]?.domainEvents).toHaveLength(0);
+        expect(answer.domainEvents).toHaveLength(0);
     });
 })
