@@ -1,6 +1,5 @@
 import { describe, it, beforeEach, expect, vi, MockInstance } from "vitest";
 import { InMemoryAnswerRepository } from "../../../../../test/repositories/in-memory-answer-repository";
-import { OnAnswerCreated } from "./on-answer-created";
 import { InMemoryAnswerAttachmentRepository } from "../../../../../test/repositories/in-memory-answer-attachment-repository";
 import { makeAnswer } from "../../../../../test/factories/make-answer";
 import { InMemoryQuestionRepository } from "../../../../../test/repositories/in-memory-question-repository";
@@ -9,6 +8,7 @@ import { SendNotification, SendNotificationRequest, SendNotificationResponse } f
 import { InMemoryNotificationRepository } from "../../../../../test/repositories/in-memory-notification-repository";
 import { makeQuestion } from "../../../../../test/factories/make-question";
 import { waitFor } from "../../../../../test/utils/wait-for";
+import { OnQuestionBestAnswerChosen } from "./on-question-best-answer-chosen";
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository;
 let inMemoryQuestionAttachment: InMemoryQuestionAttachmentRepository;
@@ -21,7 +21,7 @@ let sendNotificationExecuteSpy: MockInstance<
     (request: SendNotificationRequest) => Promise<SendNotificationResponse>
 >;
 
-describe("On Answer Created Event", () => {
+describe("On Question Best Answer", () => {
     beforeEach(() => {
         inMemoryQuestionAttachment = new InMemoryQuestionAttachmentRepository();
         inMemoryQuestionRepository = new InMemoryQuestionRepository(inMemoryQuestionAttachment);
@@ -32,10 +32,13 @@ describe("On Answer Created Event", () => {
 
         sendNotificationExecuteSpy = vi.spyOn(sendNotificationService, "execute");
 
-        new OnAnswerCreated(inMemoryQuestionRepository, sendNotificationService);
+        new OnQuestionBestAnswerChosen(
+            inMemoryAnswerRepository,
+            sendNotificationService
+        );
     });
 
-    it("should be able to send a notification when created answer", async () => {
+    it("should send a notification when question has new best answer chosen", async () => {
         const question = makeQuestion();
         const answer = makeAnswer({
             questionId: question.id
@@ -46,6 +49,10 @@ describe("On Answer Created Event", () => {
         expect(answer.domainEvents).toHaveLength(1);
 
         await inMemoryAnswerRepository.create(answer);
+
+        question.bestAnswerId = answer.id;
+
+        inMemoryQuestionRepository.save(question);
 
         await waitFor(() => {
             expect(sendNotificationExecuteSpy).toHaveBeenCalled();

@@ -3,7 +3,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 
 export interface NotificationProps {
-    recipientId: UniqueEntityID,
+    recipientId: string,
     title: string,
     content: string,
     readAt?: Date,

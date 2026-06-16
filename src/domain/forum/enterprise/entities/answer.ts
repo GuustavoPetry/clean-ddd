@@ -3,7 +3,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 import { AnswerAttachmentList } from "./answer-attachment-list";
 import { AggregateRoot } from "@/core/entities/aggregate-root";
-import { AnswerCreatedEvents } from "@/domain/notification/enterprise/events/answer-created-events";
+import { AnswerCreatedEvents } from "@/domain/forum/enterprise/events/answer-created-events";
 
 export interface AnswerProps {
     questionId: UniqueEntityID,
