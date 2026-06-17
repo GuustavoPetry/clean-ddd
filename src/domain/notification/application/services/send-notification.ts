@@ -1,7 +1,6 @@
 import { Either, rigth } from "@/core/either";
 import { NotificationRepository } from "../repositories/notification-repository";
 import { Notification } from "../../enterprise/entities/notification";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 export interface SendNotificationRequest {
     recipientId: string,
